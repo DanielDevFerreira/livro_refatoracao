@@ -31,16 +31,14 @@ function statement(invoice, plays) {
         { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
 
     for (let perf of invoice.performances) {
-        const play = plays[perf.playID];
-
         //soma créditos por volume
         volumeCredits += Math.max(perf.audience - 30, 0);
         //soma de crédito extra para cada dez espectadores de comédia
-        if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+        if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
 
         //exibe a linha para estar requisição
-        result += ` ${play.name}: ${format(anountFor(perf, play) / 100)} (${perf.audience}) seats\n`;
-        totalAmount += anountFor(perf, play);
+        result += ` ${playFor(perf).name}: ${format(anountFor(perf, playFor(perf)) / 100)} (${perf.audience}) seats\n`;
+        totalAmount += anountFor(perf, playFor(perf));
     }
 
     result += `Amount owed is ${format(totalAmount / 100)}\n`;
@@ -72,6 +70,10 @@ function anountFor(perf, play) {
     }
 
     return thisAmount;
+}
+
+function playFor(aPerfomance) {
+    return  plays[aPerfomance.playID];
 }
 
 console.log(statement(invoice, plays));
