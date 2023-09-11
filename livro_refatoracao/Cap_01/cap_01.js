@@ -4,7 +4,7 @@ let plays = {
     "othello": { "name": "Othello", "type": "tragedy" },
 }
 
-let invoice = {
+let fatura = {
     "customer": "BigCo",
     "performances": [
         {
@@ -22,58 +22,65 @@ let invoice = {
     ]
 };
 
-function statement(invoice, plays) {
-    let totalAmount = 0;
-    let volumeCredits = 0;
-    let result = `Statement for ${invoice.customer}\n`;
+function statement(fatura, plays) {
+    let totalQuantia = 0;
+    let volumeCreditos = 0;
+    let result = `Statement for ${fatura.customer}\n`;
 
     const format = new Intl.NumberFormat("en-US",
         { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
 
-    for (let perf of invoice.performances) {
-        //soma créditos por volume
-        volumeCredits += Math.max(perf.audience - 30, 0);
-        //soma de crédito extra para cada dez espectadores de comédia
-        if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
-
+    for (let desempenho of fatura.performances) {
+        volumeCreditos = volumeCreditosPara(desempenho);
         //exibe a linha para estar requisição
-        result += ` ${playFor(perf).name}: ${format(anountFor(perf, playFor(perf)) / 100)} (${perf.audience}) seats\n`;
-        totalAmount += anountFor(perf, playFor(perf));
+        result += ` ${jogarPara(desempenho).name}: ${format(valorPara(desempenho) / 100)} (${desempenho.audience}) seats\n`;
+        totalQuantia += valorPara(desempenho);
     }
 
-    result += `Amount owed is ${format(totalAmount / 100)}\n`;
-    result += `You earned ${volumeCredits} credits\n`;
+    result += `Amount owed is ${format(totalQuantia / 100)}\n`;
+    result += `You earned ${volumeCreditos} credits\n`;
     return result;
 }
 
-function anountFor(perf, play) {
-    let thisAmount = 0;
+function valorPara(aPerfomance) {
+    let estaQuantia = 0;
 
-    switch (play.type) {
+    switch (jogarPara(aPerfomance).type) {
         case "tragedy":
-            thisAmount = 40000;
-            if (perf.audience > 30) {
-                thisAmount += 1000 * (perf.audience - 30);
+            estaQuantia = 40000;
+            if (aPerfomance.audience > 30) {
+                estaQuantia += 1000 * (aPerfomance.audience - 30);
             }
             break;
         case "comedy":
-            thisAmount = 30000;
-            if (perf.audience > 20) {
-                thisAmount += 10000 + 500 * (perf.audience - 20);
+            estaQuantia = 30000;
+            if (aPerfomance.audience > 20) {
+                estaQuantia += 10000 + 500 * (aPerfomance.audience - 20);
             }
 
-            thisAmount += 300 * perf.audience;
+            estaQuantia += 300 * aPerfomance.audience;
             break;
         default:
-            throw new Error(`unknow type: ${play.type}`);
+            throw new Error(`unknow type: ${jogarPara(aPerfomance).type}`);
             break;
     }
 
-    return thisAmount;
+    return estaQuantia;
 }
 
-function playFor(aPerfomance) {
+function jogarPara(aPerfomance) {
     return  plays[aPerfomance.playID];
 }
 
-console.log(statement(invoice, plays));
+function volumeCreditosPara(aPerfomance){
+    let result = 0;
+
+    //soma créditos por volume
+    result += Math.max(aPerfomance.audience - 30, 0);
+    //soma de crédito extra para cada dez espectadores de comédia
+    if ("comedy" === jogarPara(aPerfomance).type) result += Math.floor(aPerfomance.audience / 5);
+
+    return result;   
+}
+ 
+console.log(statement(fatura, plays));
