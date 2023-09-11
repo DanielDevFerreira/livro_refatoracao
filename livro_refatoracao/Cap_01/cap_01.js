@@ -27,17 +27,14 @@ function statement(fatura, plays) {
     let volumeCreditos = 0;
     let result = `Statement for ${fatura.customer}\n`;
 
-    const format = new Intl.NumberFormat("en-US",
-        { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format;
-
     for (let desempenho of fatura.performances) {
         volumeCreditos = volumeCreditosPara(desempenho);
         //exibe a linha para estar requisição
-        result += ` ${jogarPara(desempenho).name}: ${format(valorPara(desempenho) / 100)} (${desempenho.audience}) seats\n`;
+        result += ` ${jogarPara(desempenho).name}: ${formato(valorPara(desempenho) / 100)} (${desempenho.audience}) seats\n`;
         totalQuantia += valorPara(desempenho);
     }
 
-    result += `Amount owed is ${format(totalQuantia / 100)}\n`;
+    result += `Amount owed is ${formato(totalQuantia / 100)}\n`;
     result += `You earned ${volumeCreditos} credits\n`;
     return result;
 }
@@ -81,6 +78,11 @@ function volumeCreditosPara(aPerfomance){
     if ("comedy" === jogarPara(aPerfomance).type) result += Math.floor(aPerfomance.audience / 5);
 
     return result;   
+}
+
+function formato(numero) {
+    return new Intl.NumberFormat("en-US",
+    { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(numero);
 }
  
 console.log(statement(fatura, plays));
