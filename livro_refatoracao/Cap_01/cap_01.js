@@ -24,23 +24,27 @@ let fatura = {
 
 function statement(fatura, plays) {
     let totalQuantia = 0;
-    let volumeCreditos = 0;
     let result = `Statement for ${fatura.customer}\n`;
 
+    const startTime = performance.now();
+
     for (let desempenho of fatura.performances) {
-        volumeCreditos = volumeCreditosPara(desempenho);
         //exibe a linha para estar requisição
         result += ` ${jogarPara(desempenho).name}: ${formato(valorPara(desempenho) / 100)} (${desempenho.audience}) seats\n`;
         totalQuantia += valorPara(desempenho);
     }
 
+    const endTime = performance.now();
+    console.log(`Tempo de execução: ${endTime - startTime} milissegundos`);
+
     result += `Amount owed is ${formato(totalQuantia / 100)}\n`;
-    result += `You earned ${volumeCreditos} credits\n`;
+    result += `You earned ${totalVolumeCreditos()} credits\n`;
     return result;
 }
 
 function valorPara(aPerfomance) {
     let estaQuantia = 0;
+    
 
     switch (jogarPara(aPerfomance).type) {
         case "tragedy":
@@ -83,6 +87,15 @@ function volumeCreditosPara(aPerfomance){
 function formato(numero) {
     return new Intl.NumberFormat("en-US",
     { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(numero);
+}
+
+function totalVolumeCreditos() {
+    let result = 0;
+    for (let desempenho of fatura.performances) {
+        volumeCreditos = volumeCreditosPara(desempenho);
+    }
+
+    return result;
 }
  
 console.log(statement(fatura, plays));
